@@ -72,6 +72,8 @@ class Submissions(commands.Cog):
     async def submit(self, interaction: discord.Interaction, album: str):
         self.logger.info(f"Received submit command for album ID: {album}")
 
+        await interaction.response.defer()
+
         album_data = self.verify_album(album)
         if not album_data:
             await interaction.response.send_message("There was an error verifying the album. Please check the album ID or try again later.")
