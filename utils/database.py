@@ -76,6 +76,18 @@ class Database:
         ''', (user_id, album_id, rating, comment))
         self.connection.commit()
         return cursor.lastrowid
+    
+    def update_rating(self, user_id, album_id, rating, comment=None):
+        """Update an existing rating in the ratings table."""
+        cursor = self.connection.cursor()
+        cursor.execute('''
+            UPDATE ratings
+            SET rating = ?, comment = ?, rated_at = CURRENT_TIMESTAMP
+            WHERE user_id = ? AND album_id = ?
+        ''', (rating, comment, user_id, album_id))
+        self.connection.commit()
+        return cursor.rowcount > 0  # Returns True if a row was updated, False otherwise
+
 
     def get_ratings_for_album(self, album_id):
         """Retrieve all ratings for a specific album."""
@@ -92,6 +104,19 @@ class Database:
             SELECT rating, comment FROM ratings WHERE user_id = ? AND album_id = ?
         ''', (user_id, album_id))
         return cursor.fetchone()
+    
+    def get_user_submissions(self, user_id):
+        """Retrieve all submissions made by a specific user."""
+        cursor = self.connection.cursor()
+        cursor.execute('''
+            SELECT album_id, submitted_at 
+            FROM submissions 
+            WHERE user_id = ?
+        ''', (user_id,))
+        
+        # Fetch all results and return them as a list of dictionaries
+        submissions = cursor.fetchall()
+        return [{"album_id": row[0], "submitted_at": row[1]} for row in submissions]
 
     def close_connection(self):
         if self.connection:

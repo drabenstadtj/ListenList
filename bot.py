@@ -2,29 +2,25 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
-import asyncio 
+import asyncio
+import logging
 from utils.database import Database
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import logging
 
 # Load environment variables
 load_dotenv()
-
-# Get the bot token from the environment
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Set to logging.DEBUG for more detailed output
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
-        logging.FileHandler("logs/bot.log"),  # Log to a file named bot.log
+        logging.FileHandler("logs/bot.log"),  # Log to a file
         logging.StreamHandler()  # Also log to console
     ]
 )
-
-# Initialize logging
 logger = logging.getLogger("bot")
 
 # Set up intents
@@ -33,38 +29,39 @@ intents.guilds = True
 intents.members = True
 intents.message_content = True
 
-# Initialize the bot with intents
+# Initialize the bot
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Initialize the database (as a utility, not a cog)
-db = Database("db/listenlist.db")  
-
-# Initialize Spotipy for public data
+# Initialize database and Spotipy instance
+db = Database("db/listenlist.db")
 auth_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
-# Store parameters for the bot
+# Attach resources to bot
 bot.db = db
 bot.sp = sp
 
+# Event handlers
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    logger.info(f"Logged in as {bot.user}")
     try:
-        # my_guild = discord.Object(id='1297991170202406922')  # Replace YOUR_GUILD_ID with your test server ID
-        # synced = await bot.tree.sync(guild=my_guild)
-        synced = await bot.tree.sync()
+        synced = await bot.tree.sync()  # Sync all commands globally
         logger.info(f"Synced {len(synced)} commands.")
     except Exception as e:
         logger.error(f"Error syncing commands: {e}")
 
+# Main bot function for loading cogs and starting the bot
 async def main():
     async with bot:
-        # Load cogs asynchronously
-        await bot.load_extension("cogs.albums")
+        # Load cogs
+        await bot.load_extension("cogs.current_album")
+        await bot.load_extension("cogs.submissions")
         await bot.load_extension("cogs.ratings")
+        
+        # Start the bot
         await bot.start(BOT_TOKEN)
 
-# Run the main function
-asyncio.run(main())
-
+# Run the bot
+if __name__ == "__main__":
+    asyncio.run(main())
