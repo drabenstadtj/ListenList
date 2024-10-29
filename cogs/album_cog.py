@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from spotipy.exceptions import SpotifyException
-from utils.album_manager import get_current_album
+from services.album_service import get_current_album
 import logging
 from datetime import datetime
 

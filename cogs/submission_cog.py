@@ -54,7 +54,7 @@ class Submissions(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Submissions cog is ready")
+        self.logger.info("Submissions cog is ready")
 
     def verify_album(self, album_id):
         try:

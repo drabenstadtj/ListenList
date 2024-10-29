@@ -1,0 +1,13 @@
+services:
+  bot:
+    build: .
+    container_name: listenlist
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+      - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+    volumes:
+      - ./data/db:/app/data/db           # Persist the SQLite database
+      - ./logs:/app/logs                 # Persist logs
+      # - ./.env:/app/.env                 # Environment variables
+    restart: always

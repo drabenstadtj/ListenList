@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from services.album_service import get_current_album
 import logging
 
 class RatingModal(discord.ui.Modal, title="Rate this Week's Album"):
@@ -47,13 +48,13 @@ class Ratings(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Ratings cog is ready")
+        self.logger.info("Ratings cog is ready")
 
     @app_commands.command(name="rate", description="Rate the current album")
     async def rate(self, interaction: discord.Interaction):
         self.logger.info("Received rate command")
 
-        current_album = self.db.get_current_album()
+        current_album = get_current_album()
         if not current_album:
             await interaction.response.send_message("No current album is set.")
             return
@@ -71,7 +72,7 @@ class Ratings(commands.Cog):
 
             await interaction.response.send_message(
                 f"You have already rated '{current_album['name']}' by {current_album['artist']} "
-                f"with a rating of {existing_rating[0]}/10. Would you like to re-rate?",
+                f"with a rating of {existing_rating[0]}/10.0. Would you like to re-rate?",
                 view=view
             )
 

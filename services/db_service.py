@@ -1,11 +1,14 @@
 import sqlite3
 from sqlite3 import Error
+import logging
 
 class Database:
-    def __init__(self, db_path="db/listenlist.db"):
+    def __init__(self, db_path="data/db/app.db"):
         self.connection = None
         self.db_path = db_path
+        self.logger = logging.getLogger(__name__)
         self.initialize_db()
+        
 
     def initialize_db(self):
         try:
@@ -35,9 +38,9 @@ class Database:
             ''')
             
             self.connection.commit()
-            print("Database initialized with submissions and ratings tables")
+            self.logger.info("Database initialized with submissions and ratings tables")
         except Error as e:
-            print(f"Error initializing database: {e}")
+            self.logger.error(f"Error initializing database: {e}")
 
     def add_submission(self, user_id, album_id):
         """Add a new album submission to the submissions table."""

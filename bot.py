@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import asyncio
 import logging
-from utils.database import Database
+from services.db_service import Database
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
@@ -33,7 +33,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Initialize database and Spotipy instance
-db = Database("db/listenlist.db")
+db = Database("data/db/app.db")
 auth_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
@@ -55,9 +55,9 @@ async def on_ready():
 async def main():
     async with bot:
         # Load cogs
-        await bot.load_extension("cogs.current_album")
-        await bot.load_extension("cogs.submissions")
-        await bot.load_extension("cogs.ratings")
+        await bot.load_extension("cogs.album_cog")
+        await bot.load_extension("cogs.submission_cog")
+        await bot.load_extension("cogs.rating_cog")
         
         # Start the bot
         await bot.start(BOT_TOKEN)
