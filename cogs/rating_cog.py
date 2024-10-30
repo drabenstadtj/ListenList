@@ -80,8 +80,9 @@ class Ratings(commands.Cog):
                 # Access the button's custom_id from the interaction data
                 if interaction.data["custom_id"] == "re-rate":
                     await interaction.response.send_modal(RatingModal(current_album, self.db, self.logger))
+                    await interaction.edit_original_response(view=None)  # Removes buttons but keeps original message
                 elif interaction.data["custom_id"] == "cancel":
-                    await interaction.response.send_message("Rating update canceled.")
+                    await interaction.edit_original_response(view=None)  # Removes buttons but keeps original message
 
             # Set callback for each button in the view
             for item in view.children:

@@ -16,7 +16,6 @@ class CurrentAlbum(commands.Cog):
     async def current(self, interaction: discord.Interaction):
         """Get the current album."""
         
-        await interaction.response.defer()
 
         album_data = get_current_album()
         if not album_data:
